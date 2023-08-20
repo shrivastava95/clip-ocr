@@ -9,6 +9,9 @@ from .evaluation_methods import *
 
 
 def save_checkpoint(args, model, epoch):
+    if not os.path.exists(args.checkpoint_dir):
+        os.makedirs(args.checkpoint_dir)
+
     if args.method == 'base':
         pass
     
