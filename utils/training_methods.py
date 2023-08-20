@@ -14,13 +14,13 @@ def convert_models_to_fp32(model):
 
 
 def convert_back_to_fp16(args, model):
-  if args.method == 'base':
-    clip.model.convert_weights(model)
-  elif args.method == 'coop':
-    clip.model.convert_weights(model)
-    model.trainable_param.data = model.trainable_param.data.to(torch.float16)
-  else:
-    assert False, "Not Implemented"
+    if args.method == 'base':
+        clip.model.convert_weights(model)
+    elif args.method == 'coop':
+        clip.model.convert_weights(model)
+        model.trainable_param.data = model.trainable_param.data.to(torch.float16)
+    else:
+        assert False, "Not Implemented"
 
 
 def train_clip_base(args, model, preprocess, loader, optimizer, criterion, classification_strings):
