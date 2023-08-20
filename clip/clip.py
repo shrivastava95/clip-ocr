@@ -97,9 +97,11 @@ def augment_clip(approach, model):
         pass
 
     elif approach['method'] == 'coop':
-        trainable_param = torch.nn.Parameter(torch.randn(approach['n_ctx'], model.transformer.width))
+        ctx_vecs = torch.empty(args.n_ctx, model.transformer.width)
+        nn.init.normal_(ctx_vecs, std=0.02) # taken from the paper.
+        trainable_param = torch.nn.Parameter(ctx_vecs)
         model.register_parameter('trainable_param', trainable_param)
-        
+
     elif approach['method'] == 'cocoop':
         # Implement the meta net conditioned on the images.
         assert False, "cocoop approach not implemented in clip/clip.py"
