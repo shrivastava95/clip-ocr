@@ -93,7 +93,8 @@ def main(args):
             val_acc = validator(args, model, preprocess, val_loader, classification_strings) 
             train_accuracies.append(train_acc), val_accuracies.append(val_acc)
             print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
-            save_checkpoint(args, model, epoch)
+            if args.checkpoint_dir is not None:
+                save_checkpoint(args, model, epoch)
         print(f'final accuracy:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
 
     plt.plot(losses)
@@ -111,7 +112,7 @@ if __name__ == "__main__":
         parser.add_argument("--epochs", type=int, default=10) # should be around 50-200? idk. check some reference papers on finetuning clip.
         parser.add_argument("--lr", type=float, default=3e-4) # low might be because of initial learning rate explosion. finetune the transformers onto this.
         parser.add_argument("--n-ctx", type=int, default=16) # number of learned context embeddings for coop
-        parser.add_argument("--checkpoint-dir", type=str, default=None) # if not None, saves a model for every epoch here.
+        parser.add_argument("--checkpoint-dir", type=str, default='checkpoints') # if not None, saves a model for every epoch here.
         parser.add_argument("--load-from-checkpoint", type=str, default=None)
         args = parser.parse_args()
         return args
