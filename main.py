@@ -83,6 +83,7 @@ def main(args):
         #     val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
         #     train_accuracies.append(train_acc), val_accuracies.append(val_acc)
         #     print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
+        #     save_checkpoint(args, model, epoch)
         train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
         val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
         print(f'final accuracy:  train:{train_accuracies[-1] * 100:.2f}   val:{val_accuracies[-1] * 100:.2f}')
@@ -93,6 +94,7 @@ def main(args):
             val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
             train_accuracies.append(train_acc), val_accuracies.append(val_acc)
             print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
+            save_checkpoint(args, model, epoch)
         print(f'final accuracy:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
     
     
@@ -108,7 +110,7 @@ if __name__ == "__main__":
         # parser.add_argument("--val-dir", type=str, default=None)
         parser.add_argument("--device", type=str, default="cuda")
         parser.add_argument("--clip-model", type=str, default="RN50x16") # RN50x16, ViT-B/16
-        parser.add_argument("--batch-size", type=int, default=2)
+        parser.add_argument("--batch-size", type=int, default=4)
         parser.add_argument("--epochs", type=int, default=2) # should be around 50-200? idk. check some reference papers on finetuning clip
         parser.add_argument("--lr", type=float, default=5e-5) # low might be because of initial learning rate explosion. finetune the transformers onto this.
         parser.add_argument("--n-ctx", type=int, default=16) # number of learned context embeddings for coop
