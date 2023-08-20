@@ -97,7 +97,7 @@ def augment_clip(approach, model):
         pass
 
     elif approach['method'] == 'coop':
-        ctx_vecs = torch.empty(args.n_ctx, model.transformer.width)
+        ctx_vecs = torch.empty(approach['n_ctx'], model.transformer.width)
         nn.init.normal_(ctx_vecs, std=0.02) # taken from the paper.
         trainable_param = torch.nn.Parameter(ctx_vecs)
         model.register_parameter('trainable_param', trainable_param)
