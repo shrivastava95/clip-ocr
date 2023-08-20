@@ -71,14 +71,30 @@ def main(args):
     elif args.method == 'coop':
         trainer, validator = train_clip_coop, accuracy_clip_coop
     elif args.method == 'cocoop':
-        assert False, "Not implemented trainer, validator in main.py"
+        assert False, "Not implemented: cocoop trainer, validator in main.py"
+    else:
+        assert False, f"Not implemented: the method '{args.method}' is not yet implemented in main.py"
 
-    for epoch in range(args.epochs):
-        trainer(args, model, preprocess, train_loader, optimizer, criterion, classification_strings)
+    if args.method == 'base':
+        # no finetuning for whole clip. decide this later or make a seperate method called 'finetune'
+        # for epoch in range(args.epochs):
+        #     trainer(args, model, preprocess, train_loader, optimizer, criterion, classification_strings)
+        #     train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
+        #     val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
+        #     train_accuracies.append(train_acc), val_accuracies.append(val_acc)
+        #     print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
         train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
         val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
-        train_accuracies.append(train_acc), val_accuracies.append(val_acc)
-        print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
+        print(f'final accuracy:  train:{train_accuracies[-1] * 100:.2f}   val:{val_accuracies[-1] * 100:.2f}')
+    else:
+        for epoch in range(args.epochs):
+            trainer(args, model, preprocess, train_loader, optimizer, criterion, classification_strings)
+            train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
+            val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
+            train_accuracies.append(train_acc), val_accuracies.append(val_acc)
+            print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
+        print(f'final accuracy:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
+    
     
     plt.plot(losses)
     plt.show()
@@ -93,7 +109,7 @@ if __name__ == "__main__":
         parser.add_argument("--device", type=str, default="cuda")
         parser.add_argument("--clip-model", type=str, default="RN50x16") # RN50x16, ViT-B/16
         parser.add_argument("--batch-size", type=int, default=2)
-        parser.add_argument("--epochs", type=int, default=1) # should be around 50-200? idk. check some reference papers on finetuning clip
+        parser.add_argument("--epochs", type=int, default=2) # should be around 50-200? idk. check some reference papers on finetuning clip
         parser.add_argument("--lr", type=float, default=5e-5) # low might be because of initial learning rate explosion. finetune the transformers onto this.
         parser.add_argument("--n-ctx", type=int, default=16) # number of learned context embeddings for coop
         parser.add_argument("--checkpoint-dir", type=str, default=None) # if not None, saves a model for every epoch here.

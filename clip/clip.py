@@ -211,6 +211,9 @@ def load(name: str, approach: dict, device: Union[str, torch.device] = "cuda" if
         # Implement the meta net conditioned on the images.
         assert False, "cocoop approach not implemented in clip/clip.py"
 
+    else:
+        assert False, f"Not implemented: the method \'{approach['method']}\' is not yet implemented in clip/clip.py"
+
     return model, _transform(model.input_resolution.item())
 
 
