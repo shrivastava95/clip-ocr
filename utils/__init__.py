@@ -26,13 +26,15 @@ def make_classification_strings(args, class_names):
         assert False, "Not Implemented: cocoop in utils/__init__.py"
     else:
         assert False, f"Not implemented: the method '{args.method}' is not yet implemented in utils.py"
+    return classification_strings
 
 def make_optimizer(args, model):
     if args.method == 'base':
-        torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2) # taken from a paper.
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2) # taken from a paper.
     elif args.method == 'coop':
-        torch.optim.Adam([model.trainable_param], lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2) # taken from a paper.
+        optimizer = torch.optim.Adam([model.trainable_param], lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2) # taken from a paper.
     elif args.method == 'cocoop':
         assert False, "Not Implemented: cocoop in utils/__init__.py"
     else:
         assert False, f"Not implemented: the method '{args.method}' is not yet implemented in utils.py"
+    return optimizer

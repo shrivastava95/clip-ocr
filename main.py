@@ -109,7 +109,7 @@ if __name__ == "__main__":
         parser.add_argument("--dataset-dir", type=str, default="dataset")
         # parser.add_argument("--val-dir", type=str, default=None)
         parser.add_argument("--device", type=str, default="cuda")
-        parser.add_argument("--clip-model", type=str, default="RN50x16") # RN50x16, ViT-B/16
+        parser.add_argument("--clip-model", type=str, default="ViT-B/16") # RN50x16, ViT-B/16
         parser.add_argument("--batch-size", type=int, default=4)
         parser.add_argument("--epochs", type=int, default=2) # should be around 50-200? idk. check some reference papers on finetuning clip
         parser.add_argument("--lr", type=float, default=5e-5) # low might be because of initial learning rate explosion. finetune the transformers onto this.

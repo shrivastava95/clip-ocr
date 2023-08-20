@@ -239,6 +239,8 @@ class VisionTransformer(nn.Module):
 
         return x
 
+def test():
+    print('debuggin.... sample text. this method is availbable!')
 
 class CLIP(nn.Module):
     def __init__(self,

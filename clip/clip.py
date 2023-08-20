@@ -90,6 +90,23 @@ def available_models() -> List[str]:
     """Returns the names of available CLIP models"""
     return list(_MODELS.keys())
 
+################################### ishaan: add some shit to the model if needed. for coop, add trainable params. for cocoop, add the meta net.
+def augment_clip(approach, model):
+    print(f'approach["method"]: {approach["method"]}')
+    if approach['method'] == 'base':
+        pass
+
+    elif approach['method'] == 'coop':
+        trainable_param = torch.nn.Parameter(torch.randn(approach['n_ctx'], model.transformer.width))
+        model.register_parameter('trainable_param', trainable_param)
+        
+    elif approach['method'] == 'cocoop':
+        # Implement the meta net conditioned on the images.
+        assert False, "cocoop approach not implemented in clip/clip.py"
+
+    else:
+        assert False, f"Not implemented: the method \'{approach['method']}\' is not yet implemented in clip/clip.py"
+
 
 def load(name: str, approach: dict, device: Union[str, torch.device] = "cuda" if torch.cuda.is_available() else "cpu", jit: bool = False, download_root: str = None):
     """Load a CLIP model
@@ -139,6 +156,9 @@ def load(name: str, approach: dict, device: Union[str, torch.device] = "cuda" if
         model = build_model(state_dict or model.state_dict()).to(device)
         if str(device) == "cpu":
             model.float()
+
+        ################################### ishaan: add the necessary other stuff to the model being built.
+        augment_clip(approach, model)
         return model, _transform(model.visual.input_resolution)
 
     # patch the device names
@@ -199,20 +219,8 @@ def load(name: str, approach: dict, device: Union[str, torch.device] = "cuda" if
 
         model.float()
 
-    ################################### ishaan: add some shit to the model if needed. for coop, add trainable params. for cocoop, add the meta net.
-    if approach['method'] == 'base':
-        pass
-
-    elif approach['method'] == 'coop':
-        trainable_param = torch.nn.Parameter(torch.randn(approach['n_ctx'], model.transformer.width))
-        model.register_parameter('trainable_param', trainable_param)
-        
-    elif approach['method'] == 'cocoop':
-        # Implement the meta net conditioned on the images.
-        assert False, "cocoop approach not implemented in clip/clip.py"
-
-    else:
-        assert False, f"Not implemented: the method \'{approach['method']}\' is not yet implemented in clip/clip.py"
+    ################################### ishaan: add the necessary other stuff to the model being built. dunno if this one will work tho.
+    augment_clip(approach, model)
 
     return model, _transform(model.input_resolution.item())
 
