@@ -25,7 +25,6 @@ def convert_back_to_fp16(args, model):
 
 def train_clip_base(args, model, preprocess, loader, optimizer, criterion, classification_strings):
     losses = []
-    model.train()
     for batch in tqdm(loader):
         optimizer.zero_grad()
         images, labels = batch
@@ -53,8 +52,7 @@ def train_clip_base(args, model, preprocess, loader, optimizer, criterion, class
     return losses
 
 def train_clip_coop(args, model, preprocess, loader, optimizer, criterion, classification_strings):
-    losses = [] 
-    model.train()
+    losses = []
     for batch in tqdm(loader):
         optimizer.zero_grad()
         images, labels = batch
