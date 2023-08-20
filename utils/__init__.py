@@ -10,8 +10,8 @@ from .evaluation_methods import *
 
 def save_checkpoint(args, model, epoch):
     if args.method == 'base':
-
         pass
+    
     elif args.method == 'coop':
         torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, str(epoch) + '.pt'))
 

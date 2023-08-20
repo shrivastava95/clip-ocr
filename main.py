@@ -78,19 +78,19 @@ def main(args):
 
     if args.method == 'base':
         # no finetuning for whole clip. decide this later or make a seperate method called 'finetune'
-        train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
-        val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
+        train_acc = validator(args, model, preprocess, train_loader, classification_strings) 
+        val_acc = validator(args, model, preprocess, val_loader, classification_strings) 
         print(f'accuracy:  train:{train_accuracies[-1] * 100:.2f}   val:{val_accuracies[-1] * 100:.2f}')
     else:
         losses = losses + trainer(args, model, preprocess, train_loader, optimizer, criterion, classification_strings)
-        train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
-        val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
+        train_acc = validator(args, model, preprocess, train_loader, classification_strings) 
+        val_acc = validator(args, model, preprocess, val_loader, classification_strings) 
         train_accuracies.append(train_acc), val_accuracies.append(val_acc)
         print(f'before training:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
         for epoch in range(args.epochs):
             losses = losses + trainer(args, model, preprocess, train_loader, optimizer, criterion, classification_strings)
-            train_acc = validator(args, model, preprocess, train_loader, optimizer, criterion, classification_strings) 
-            val_acc = validator(args, model, preprocess, val_loader, optimizer, criterion, classification_strings) 
+            train_acc = validator(args, model, preprocess, train_loader, classification_strings) 
+            val_acc = validator(args, model, preprocess, val_loader, classification_strings) 
             train_accuracies.append(train_acc), val_accuracies.append(val_acc)
             print(f'end of epoch {epoch+1}:  train:{train_acc * 100:.2f}   val:{val_acc * 100:.2f}')
             save_checkpoint(args, model, epoch)
