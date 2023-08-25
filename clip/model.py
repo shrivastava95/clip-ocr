@@ -376,9 +376,38 @@ class CLIP(nn.Module):
         x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
 
         return x
+    
+    def encode_text_cocoop(self, text, image_features_normed):
+        bx = self.token_embedding(text).type(self.dtype)  # [num_classes, n_tokens, d_model]
+        bx = bx.unsqueeze(0).repeat(image_features_normed.shape[0], 1, 1, 1) # [batch_size, num_classes, n_tokens, d_model] or BNLD
 
-    def encode_text_cocoop(self, text):
-        assert False, "encode_text_cocoop not implemented in clip/model.py"
+		# ishaan: line added here for the replacement using the extra parameter stored inside the model
+        # context_embedding = self.trainable_param              # [n_ctx, d_model]
+        meta_embedding = self.meta_net(image_features_normed) # [batch_size, d_model]
+        context_embedding = context_embedding.unsqueeze(0)     # [1, n_ctx, d_model]
+        meta_embedding = meta_embedding.unsqueeze(1)           # [batch_size, 1, d_model]
+        net_embedding = context_embedding + meta_embedding     # [batch_size, n_ctx, d_model]
+        net_embedding = net_embedding.unsqueeze(1).repeat(1, bx.shape[1], 1, 1) # [batch_size, num_classes, n_ctx, d_model] or BNnD
+		
+        bx[:, :, 1:1+context_embedding.shape[1], :] = net_embedding # tokenizer outputs: <start> <word1> <word2> <word3> ... <eos> <0> <0> ... 77 tokens in total
+
+        text_features = []
+        for x in bx:
+            x = x + self.positional_embedding.type(self.dtype)
+            x = x.permute(1, 0, 2)  # NLD -> LND
+            x = self.transformer(x)
+            x = x.permute(1, 0, 2)  # LND -> NLD
+            x = self.ln_final(x).type(self.dtype)
+
+            # x.shape = [num_classes, n_ctx, transformer.width]
+            # take features from the eot embedding (eot_token is the highest number in each sequence)
+            x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
+
+            text_features.append(x)
+        text_features = torch.stack(text_features)
+
+        return text_features
+
 
     def forward(self, image, text):
         image_features = self.encode_image(image)
