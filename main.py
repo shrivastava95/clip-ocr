@@ -18,8 +18,8 @@ from utils import save_checkpoint
 from utils import make_classification_strings
 from utils import make_optimizer
 
-from utils.training_methods import train_clip_base, train_clip_coop
-from utils.evaluation_methods import accuracy_clip_base, accuracy_clip_coop
+from utils.training_methods import train_clip_base, train_clip_coop, train_clip_cocoop
+from utils.evaluation_methods import accuracy_clip_base, accuracy_clip_coop, accuracy_clip_cocoop
 
 from utils import convert_models_to_fp32, convert_back_to_fp16
 
@@ -72,7 +72,7 @@ def main(args):
     elif args.method == 'coop':
         trainer, validator = train_clip_coop, accuracy_clip_coop
     elif args.method == 'cocoop':
-        assert False, "Not implemented: cocoop trainer, validator in main.py"
+        trainer, validator = train_clip_cocoop, accuracy_clip_cocoop
     else:
         assert False, f"Not implemented: the method '{args.method}' is not yet implemented in main.py"
 

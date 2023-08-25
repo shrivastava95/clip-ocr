@@ -13,13 +13,13 @@ def save_checkpoint(args, model, epoch):
         os.makedirs(args.checkpoint_dir)
 
     if args.method == 'base':
-        pass
+        torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, '_' + str(epoch) + '.pt'))
     
     elif args.method == 'coop':
-        torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, str(epoch) + '.pt'))
+        torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, '_' + str(epoch) + '.pt'))
 
     elif args.method == 'cocoop':
-        assert False, "Not Implemented"
+        torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, '_' + str(epoch) + '.pt'))
 
     else:
         assert False, "Not Implemented"
@@ -37,7 +37,8 @@ def make_classification_strings(args):
         classification_strings = ['X ' * args.n_ctx + class_name for class_name in class_names]
 
     elif args.method == 'cocoop':
-        assert False, "Not Implemented: cocoop in utils/__init__.py"
+        class_names = ['english', 'odiya']
+        classification_strings = ['X ' * args.n_ctx + class_name for class_name in class_names]
 
     else:
         assert False, f"Not implemented: the method '{args.method}' is not yet implemented in utils.py"
@@ -53,7 +54,7 @@ def make_optimizer(args, model):
         optimizer = torch.optim.Adam([model.trainable_param], lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2) # taken from a paper.
 
     elif args.method == 'cocoop':
-        assert False, "Not Implemented: cocoop in utils/__init__.py"
+        optimizer = torch.optim.Adam([model.trainable_param] + list(model.meta_net.parameters()), lr=args.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2)
 
     else:
         assert False, f"Not implemented: the method '{args.method}' is not yet implemented in utils.py"

@@ -4,6 +4,7 @@ import urllib
 import warnings
 from typing import Any, Union, List
 from pkg_resources import packaging
+from collections import OrderedDict
 
 import torch
 from PIL import Image
@@ -97,14 +98,28 @@ def augment_clip(approach, model):
         pass
 
     elif approach['method'] == 'coop':
+        # coop: trainable context vector
         ctx_vecs = torch.empty(approach['n_ctx'], model.transformer.width)
         torch.nn.init.normal_(ctx_vecs, std=0.02) # taken from the paper.
         trainable_param = torch.nn.Parameter(ctx_vecs)
         model.register_parameter('trainable_param', trainable_param)
 
     elif approach['method'] == 'cocoop':
-        # Implement the meta net conditioned on the images.
-        assert False, "cocoop approach not implemented in clip/clip.py"
+        # coop: trainable context vector
+        ctx_vecs = torch.empty(approach['n_ctx'], model.transformer.width)
+        torch.nn.init.normal_(ctx_vecs, std=0.02) # taken from the paper.
+        trainable_param = torch.nn.Parameter(ctx_vecs)
+        model.register_parameter('trainable_param', trainable_param)
+        
+        # cocoop: meta net
+        ctx_dim = model.ln_final.weight.shape[0]
+        vis_dim = model.visual.output_dim
+        model.meta_net = torch.nn.Sequential(OrderedDict([
+            ("linear1", torch.nn.Linear(vis_dim, vis_dim // 16)),
+            ("relu", torch.nn.ReLU(inplace=True)),
+            ("linear2", torch.nn.Linear(vis_dim // 16, ctx_dim))
+        ]))
+        model.meta_net = model.meta_net.half() # is this okay? check if this is causing problems
 
     else:
         assert False, f"Not implemented: the method \'{approach['method']}\' is not yet implemented in clip/clip.py"
